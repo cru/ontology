@@ -1,5 +1,5 @@
-#from django.db import models
-#from mptt.models import MPTTModel, TreeForeignKey
+from django.db import models
+from mptt.models import MPTTModel, TreeForeignKey
 import xml.etree.ElementTree as ET 
 
 
@@ -103,12 +103,17 @@ def add_children_ICD10(xml_root, ICD10_root):
 
 
 
-class Ontology(): #MPTTModel): 
+class Ontology(MPTTModel): 
 	# the generalized ontology class. Will be speciflized into READCODE and ICD-10
 	code = "no code yet"
 	description = "no description yet"
+	parent = TreeForeignKey('self', null=True, blank=True, related_name="children")
+	index = models.SlugField()
 
-	#parent = ''
+	class MPTTMeta:
+		order_insertion_by = ['index']
+		#app_label = "sites"
+
 	def add_code(self, new_code):	
 		self.code = new_code
 		#print "adding a new code//////////////////////////////////////"
@@ -130,6 +135,12 @@ class Ontology(): #MPTTModel):
 	def get_description(self):
 		#print "returning description: ", self.description
 		return self.description 
+
+
+	
+
+	def __unicode__(self):
+		return "%s" % self.code
 
 
 
@@ -244,5 +255,5 @@ print "done"
 
 
 
-# want root.tag == 'section id'
-
+# put into MPTT model
+#.json file
